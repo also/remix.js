@@ -61,14 +61,11 @@ file 'dist/remix.js' => ['dist'] + REMIX_SRC_FILES do
   sh "cat #{REMIX_SRC_FILES} > dist/remix.js"
 end
 
-directory 'dist/example'
-
-file 'dist/example' => ['dist/remix.swf', 'dist/remix.js'] + EXAMPLE_STATIC_FILES do
+task :example => ['dist/remix.swf', 'dist/remix.js'] + EXAMPLE_STATIC_FILES do
+  sh 'mkdir -p dist/example'
   sh "cp #{EXAMPLE_STATIC_FILES} dist/example"
   sh 'cp dist/remix.swf dist/example'
 end
-
-task :example => ['dist/example']
 
 task :swf => ['dist/remix.swf']
 
@@ -79,12 +76,9 @@ task :clean do
   sh 'rm -rf build'
 end
 
-directory 'dist/src'
-file 'dist/src' => LIBRARIES do
+task :src_dist => LIBRARIES do
   sh 'mkdir -p dist/src/lib'
   sh "cp #{LIBRARIES.join(' ')} dist/src/lib"
   sh 'cp -r src dist/src/src'
   sh "cp #{STATIC_FILES.join(' ')} dist/src"
 end
-
-task :src_dist => 'dist/src'
