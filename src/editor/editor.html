@@ -26,7 +26,10 @@
 }</textarea></div>
 
 <script type="text/javascript">
-Remix.init();
+var apiKey = prompt('Enter your Echo Nest API key');
+if (apiKey) {
+    Remix.init(apiKey);
+}
 </script>
 </body>
 </html>

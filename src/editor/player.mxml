@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init();" paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" addedToStage="init();" paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0">
   <mx:VBox width="100%" paddingTop="10" paddingRight="10" paddingLeft="10">
     <mx:HBox paddingBottom="10">
       <mx:Button id="browseButton" label="Choose a song…" click="chooseFile();"/>
@@ -43,7 +43,8 @@
     private var positionUpdateTimer:Timer;
 
     private function init():void {
-      trackApi.apiKey = 'YOUR_API_KEY';
+      var options:Object = root.loaderInfo.parameters;
+      trackApi.apiKey = options.apiKey;
 
       positionUpdateTimer = new Timer(10);
       positionUpdateTimer.addEventListener('timer', positionUpdateTimerHandler);
