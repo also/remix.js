@@ -1,6 +1,6 @@
 var Remix = {
     init: function() {
-        swfobject.embedSWF('player.swf', 'swf', '400', '120', '9.0.0');
+        swfobject.embedSWF('remix.swf', 'swf', '400', '120', '9.0.0');
         this._remixJsElt = document.getElementById('remixJs');
         this._progressElt = document.getElementById('progress');
 
