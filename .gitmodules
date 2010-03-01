@@ -1,0 +1,9 @@
+[submodule "lib/echo-nest-flash-api"]
+	path = lib/echo-nest-flash-api
+	url = git://github.com/also/echo-nest-flash-api.git
+[submodule "lib/flash-audio"]
+	path = lib/flash-audio
+	url = git://github.com/also/flash-audio.git
+[submodule "lib/soundtouch-as3"]
+	path = lib/soundtouch-as3
+	url = git://github.com/also/soundtouch-as3.git
