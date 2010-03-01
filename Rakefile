@@ -1,3 +1,4 @@
+MXMLCFLAGS = ' -target-player 10.0.0'
 REMIX_SRC_FILES = FileList.new('src/js/**/*.js')
 EXAMPLE_STATIC_FILES = FileList.new('src/editor/*') { |fl| fl.exclude('src/editor/player.mxml') }
 
@@ -29,7 +30,7 @@ file 'lib/MP3FileReferenceLoaderLib' do
 end
 
 file 'lib/MP3FileReferenceLoaderLib/MP3FileReferenceLoaderLib.swc' => ['lib/MP3FileReferenceLoaderLib'] do
-  sh 'compc -source-path lib/MP3FileReferenceLoaderLib/src -include-classes org/audiofx/mp3/ByteArraySegment org/audiofx/mp3/MP3FileReferenceLoader org/audiofx/mp3/MP3Parser org/audiofx/mp3/MP3SoundEvent org/audiofx/mp3/SoundClassSwfByteCode -o lib/MP3FileReferenceLoaderLib/MP3FileReferenceLoaderLib.swc'
+  sh "compc#{MXMLCFLAGS} -source-path lib/MP3FileReferenceLoaderLib/src -include-classes org/audiofx/mp3/ByteArraySegment org/audiofx/mp3/MP3FileReferenceLoader org/audiofx/mp3/MP3Parser org/audiofx/mp3/MP3SoundEvent org/audiofx/mp3/SoundClassSwfByteCode -o lib/MP3FileReferenceLoaderLib/MP3FileReferenceLoaderLib.swc"
 end
 
 directory 'build'
@@ -43,7 +44,7 @@ def swc(o, path, swc_deps=[], &block)
     as_files = FileList["#{path}/**/*.as"] if as_files.length == 0
     path_len = path.length + 1
     include_classes = as_files.to_a.map {|f| f[path_len...-3]}.join(' ')
-    sh "compc -source-path #{path} -include-classes #{include_classes} -library-path+=#{library_path} -o #{o}"
+    sh "compc#{MXMLCFLAGS} -source-path #{path} -include-classes #{include_classes} -library-path+=#{library_path} -o #{o}"
   end
 end
 
@@ -52,8 +53,8 @@ swc 'build/echo-nest-flash-api.swc', 'lib/echo-nest-flash-api/src', ['lib/MP3Fil
 
 directory 'dist'
 
-file 'dist/remix.swf' => LIBRARIES do
-  sh "mxmlc -library-path+=#{LIBRARIES.join(',')} -output dist/remix.swf -- src/editor/player.mxml"
+file 'dist/remix.swf' => ['src/editor/player.mxml'] + LIBRARIES do
+  sh "mxmlc#{MXMLCFLAGS} -library-path+=#{LIBRARIES.join(',')} -output dist/remix.swf -- src/editor/player.mxml"
 end
 
 file 'dist/remix.js' => ['dist'] + REMIX_SRC_FILES do
