@@ -42,8 +42,7 @@ def swc(o, path, swc_deps=[], &block)
     yield if block_given?
     # do this again if there weren't any files when we created the list
     as_files = FileList["#{path}/**/*.as"] if as_files.length == 0
-    path_len = path.length + 1
-    include_classes = as_files.to_a.map {|f| f[path_len...-3]}.join(' ')
+    include_classes = as_files.pathmap("%{^#{path}/,}X")
     sh "compc#{MXMLCFLAGS} -source-path #{path} -include-classes #{include_classes} -library-path+=#{library_path} -o #{o}"
   end
 end
