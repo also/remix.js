@@ -4,6 +4,10 @@ var Remix = {
         this._remixJsElt = document.getElementById('remixJs');
         this._progressElt = document.getElementById('progress');
 
+        if (location.hash) {
+            Remix._loadScript();
+        }
+
         // add selection and sorting functions to global scope
         extend(window, selection);
         extend(window, sorting);
@@ -54,7 +58,11 @@ var Remix = {
                 this.sampleRanges.push(aq.start, aq.end);
             }
 
-            this._swf.setRemixString(this.sampleRanges.join(','))
+
+            if (this.onRemix) {
+                this.onRemix();
+            }
+            this._swf.setRemixString(this.sampleRanges.join(','));
         }
         catch (e) {
             alert(e);
@@ -63,5 +71,19 @@ var Remix = {
 
     __setProgress: function(progress) {
         this._progressElt.style.width = 100 * progress + '%';
+    },
+
+    _scriptLoaded: function() {
+        if (remix) {
+            this._remixJsElt.value = remix;
+        }
+        else {
+            alert('Remix function not found in script.');
+        }
+    },
+
+    _loadScript: function() {
+        remix = null;
+        document.write('<script src="' + location.hash.substring(1) + '" onload="Remix._scriptLoaded();"><' + '/script>');
     }
 };
