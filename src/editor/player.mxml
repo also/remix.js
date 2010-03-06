@@ -16,10 +16,10 @@
   <mx:Script><![CDATA[
     import com.adobe.serialization.json.JSON;
     import com.ryanberdeen.audio.ISampleSource;
-    import com.ryanberdeen.audio.DiscontinuousSampleSource;
-    import com.ryanberdeen.audio.SampleRange;
+    import com.ryanberdeen.audio.RangeSampleSource;
     import com.ryanberdeen.audio.SampleSourcePlayer;
     import com.ryanberdeen.audio.SoundSampleSource;
+    import com.ryanberdeen.audio.SourceList;
     import com.ryanberdeen.echonest.api.v3.EchoNestErrorEvent;
     import com.ryanberdeen.echonest.api.v3.track.AnalysisEvent;
     import com.ryanberdeen.echonest.api.v3.track.TrackApi;
@@ -213,10 +213,9 @@
     }
 
     private function discontinuousRemix(sampleRanges:Array):ISampleSource {
-      var sampleSource:DiscontinuousSampleSource = new DiscontinuousSampleSource();
+      var sampleSource:SourceList = new SourceList();
 
-      sampleSource.sampleRanges = sampleRanges;
-      sampleSource.sampleSource = new SoundSampleSource(sound);
+      sampleSource.sources = sampleRanges;
 
       return sampleSource;
     }
@@ -269,8 +268,13 @@
 
     private function setRemixArray(array:Array):void {
       var result:Array = [];
+        var soundSampleSource:SoundSampleSource = new SoundSampleSource(sound);
       for (var i:int = 0; i < array.length - 1; i++) {
-        result.push(new SampleRange(Math.round(Number(array[i]) * 44100), Math.round(Number(array[++i]) * 44100)));
+
+        var startOffset:Number = Math.round(Number(array[i]) * 44100);
+        var endOffset:Number = Math.round(Number(array[++i]) * 44100);
+        var length:Number = endOffset - startOffset;
+        result.push(new RangeSampleSource(soundSampleSource, startOffset, length));
       }
 
       setRemix(result);
