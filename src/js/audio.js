@@ -32,6 +32,14 @@ function AudioQuantum() {
 }
 
 extend(AudioQuantum.prototype, {
+    clone: function () {
+        var that = new AudioQuantum();
+        that.start = this.start;
+        that.end = this.end;
+        that.duration = this.duration;
+        return that;
+    },
+
     setDuration: function(duration) {
         this.duration = duration;
         this.end = this.start + duration;
