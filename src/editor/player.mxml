@@ -25,6 +25,8 @@
     import com.ryanberdeen.echonest.api.v3.track.TrackApi;
     import com.ryanberdeen.echonest.api.v3.track.utils.TrackLoader;
     import com.ryanberdeen.echonest.api.v3.track.utils.TrackLoaderEvent;
+    import com.ryanberdeen.remix.filter.IFilterFactory;
+    import com.ryanberdeen.remix.filter.SoundTouchFilterFactory;
 
     import flash.events.Event;
     import flash.media.Sound;
@@ -41,6 +43,10 @@
     private var samples:Array;
     private var playing:Boolean;
     private var positionUpdateTimer:Timer;
+
+    private var filterFactories:Object = {
+      'touch': new SoundTouchFilterFactory()
+    }
 
     private function init():void {
       var options:Object = root.loaderInfo.parameters;
@@ -263,26 +269,39 @@
     }
 
     private function setRemixString(string:String):void {
-      setRemixArray(string.split(','));
+      setRemix(parseRemixString(string));
     }
 
-    private function setRemixArray(array:Array):void {
+    private function parseRemixString(string:String):Array {
+      var array:Array = JSON.decode(string);
       var result:Array = [];
-        var soundSampleSource:SoundSampleSource = new SoundSampleSource(sound);
+      var soundSampleSource:SoundSampleSource = new SoundSampleSource(sound);
       for (var i:int = 0; i < array.length - 1; i++) {
-
-        var startOffset:Number = Math.round(Number(array[i]) * 44100);
-        var endOffset:Number = Math.round(Number(array[++i]) * 44100);
+        var item:Array = array[i];
+        var startOffset:Number = Math.round(Number(item[0]) * 44100);
+        var endOffset:Number = Math.round(Number(item[1]) * 44100);
         var length:Number = endOffset - startOffset;
-        result.push(new RangeSampleSource(soundSampleSource, startOffset, length));
+        var range:RangeSampleSource = new RangeSampleSource(soundSampleSource, startOffset, length);
+        var source:ISampleSource = range;
+        if (item.length > 2) {
+          var options:Object = item[2];
+          var filterSpecs:Object = options.filters;
+          if (filterSpecs) {
+            for each (var filterSpec:Object in filterSpecs) {
+              var factory:IFilterFactory = filterFactories[filterSpec.name];
+              source = factory.createFilter(source, filterSpec.options);
+            }
+          }
+        }
+        result.push(source);
       }
 
-      setRemix(result);
+      return result;
     }
 
-    private function setRemix(sampleRanges:Array):void {
-      samples = sampleRanges;
-      remixPlayer.sampleSource = discontinuousRemix(sampleRanges);
+    private function setRemix(sources:Array):void {
+      samples = sources;
+      remixPlayer.sampleSource = discontinuousRemix(sources);
       preparePlayer();
       play();
     }

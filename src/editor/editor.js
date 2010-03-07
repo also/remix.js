@@ -46,7 +46,7 @@ var Remix = {
                 return;
             }
 
-            this.sampleRanges = [];
+            this.mixSpec = [];
             remixDuration = 0;
             for (var i = 0; i < aqs.length; i++) {
                 var aq = aqs[i];
@@ -55,14 +55,18 @@ var Remix = {
                     return;
                 }
                 remixDuration += aq.end - aq.start;
-                this.sampleRanges.push(aq.start, aq.end);
+                var spec = [aq.start, aq.end];
+                if (aq.filters) {
+                    spec.push({filters: aq.filters});
+                }
+                this.mixSpec.push(spec);
             }
 
 
             if (this.onRemix) {
                 this.onRemix();
             }
-            this._swf.setRemixString(this.sampleRanges.join(','));
+            this._swf.setRemixString(JSON.stringify(this.mixSpec));
         }
         catch (e) {
             alert(e);
@@ -87,3 +91,5 @@ var Remix = {
         document.write('<script src="' + location.hash.substring(1) + '" onload="Remix._scriptLoaded();"><' + '/script>');
     }
 };
+
+FilteredAudioQuantum.addFilter('touch');

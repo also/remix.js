@@ -18,8 +18,16 @@ FilteredAudioQuantum.Methods = {
     }
 };
 
+extend(FilteredAudioQuantum, {
+    addFilter: function (name) {
+        AudioQuantum.prototype[name] = function (options) {
+            return this.filtered('touch', options);
+        };
+    }
+});
+
 extend(AudioQuantum.prototype, {
-    filtered: function(name, options) {
+    filtered: function (name, options) {
         return new FilteredAudioQuantum(this, name, options);
     }
 });

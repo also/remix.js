@@ -2,7 +2,7 @@ MXMLCFLAGS = ' -target-player 10.0.0'
 REMIX_SRC_FILES = FileList.new('src/js/**/*.js')
 EXAMPLE_STATIC_FILES = FileList.new('src/editor/*') { |fl| fl.exclude('src/editor/player.mxml') }
 
-LIBRARIES = ['build/echo-nest-flash-api.swc', 'build/flash-audio.swc', 'lib/as3corelib-.92.1/lib/as3corelib.swc']
+LIBRARIES = ['build/echo-nest-flash-api.swc', 'build/flash-audio.swc', 'build/soundtouch-as3.swc', 'lib/as3corelib-.92.1/lib/as3corelib.swc']
 
 STATIC_FILES = ['README.markdown', 'LICENSE.txt']
 
@@ -50,10 +50,18 @@ end
 swc 'build/flash-audio.swc', 'lib/flash-audio/src'
 swc 'build/echo-nest-flash-api.swc', 'lib/echo-nest-flash-api/src', ['lib/MP3FileReferenceLoaderLib/MP3FileReferenceLoaderLib.swc', 'lib/as3corelib-.92.1/lib/as3corelib.swc']
 
+
+file 'build/soundtouch-as3.swc' do
+  path = 'lib/soundtouch-as3/src'
+  as_files = FileList.new("#{path}/**/*.as") { |fl| fl.exclude("#{path}/com/ryanberdeen/soundtouch/standingwave2/*") }
+  include_classes = as_files.pathmap("%{^#{path}/,}X")
+  sh "compc#{MXMLCFLAGS} -source-path #{path} -include-classes #{include_classes} -library-path+=#{} -o 'build/soundtouch-as3.swc'"
+end
+
 directory 'dist'
 
 file 'dist/remix.swf' => ['src/editor/player.mxml'] + LIBRARIES do
-  sh "mxmlc#{MXMLCFLAGS} -library-path+=#{LIBRARIES.join(',')} -output dist/remix.swf -- src/editor/player.mxml"
+  sh "mxmlc#{MXMLCFLAGS} -source-path src/as -library-path+=#{LIBRARIES.join(',')} -output dist/remix.swf -- src/editor/player.mxml"
 end
 
 file 'dist/remix.js' => ['dist'] + REMIX_SRC_FILES do
