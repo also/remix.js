@@ -29,3 +29,7 @@ if (!Array.prototype.indexOf) {
         return -1;
     };
 };
+
+if (!window.localStorage) {
+    window.localStorage = {};
+}

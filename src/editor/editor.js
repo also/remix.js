@@ -1,6 +1,9 @@
 var Remix = {
     init: function(apiKey) {
-        swfobject.embedSWF('remix.swf', 'swf', '400', '120', '9.0.0', null, {apiKey: apiKey});
+        if (apiKey) {
+            localStorage.echoNestApiKey = apiKey;
+        }
+        swfobject.embedSWF('remix.swf', 'swf', '400', '120', '9.0.0', null, {apiKey: localStorage.echoNestApiKey});
         this._remixJsElt = document.getElementById('remixJs');
         this._progressElt = document.getElementById('progress');
 
@@ -11,6 +14,14 @@ var Remix = {
         // add selection and sorting functions to global scope
         extend(window, selection);
         extend(window, sorting);
+    },
+
+    apiKeyRequired: function () {
+        return !localStorage.echoNestApiKey;
+    },
+
+    onError: function(message) {
+        alert(message);
     },
 
     __init: function() {

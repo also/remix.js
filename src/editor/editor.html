@@ -26,8 +26,15 @@
 }</textarea></div>
 
 <script type="text/javascript">
-var apiKey = prompt('Enter your Echo Nest API key');
-if (apiKey) {
+
+var apiKey = null;
+var required = Remix.apiKeyRequired();
+
+if (required) {
+    apiKey = prompt('Enter your Echo Nest API key')
+}
+
+if (!required || apiKey) {
     Remix.init(apiKey);
 }
 </script>
