@@ -14,19 +14,13 @@
   </mx:VBox>
 
   <mx:Script><![CDATA[
-    import com.adobe.serialization.json.JSON;
-    import com.ryanberdeen.audio.ISampleSource;
-    import com.ryanberdeen.audio.RangeSampleSource;
     import com.ryanberdeen.audio.SampleSourcePlayer;
-    import com.ryanberdeen.audio.SoundSampleSource;
-    import com.ryanberdeen.audio.SourceList;
     import com.ryanberdeen.echonest.api.v3.EchoNestErrorEvent;
     import com.ryanberdeen.echonest.api.v3.track.AnalysisEvent;
     import com.ryanberdeen.echonest.api.v3.track.TrackApi;
     import com.ryanberdeen.echonest.api.v3.track.utils.TrackLoader;
     import com.ryanberdeen.echonest.api.v3.track.utils.TrackLoaderEvent;
-    import com.ryanberdeen.remix.filter.IFilterFactory;
-    import com.ryanberdeen.remix.filter.SoundTouchFilterFactory;
+    import com.ryanberdeen.remix.Manager;
 
     import flash.events.Event;
     import flash.media.Sound;
@@ -40,17 +34,16 @@
     private var beats:Array;
 
     private var remixPlayer:SampleSourcePlayer;
-    private var samples:Array;
     private var playing:Boolean;
     private var positionUpdateTimer:Timer;
 
-    private var filterFactories:Object = {
-      'touch': new SoundTouchFilterFactory()
-    }
+    private var manager:Manager;
 
     private function init():void {
       var options:Object = root.loaderInfo.parameters;
       trackApi.apiKey = options.apiKey;
+
+      manager = new Manager();
 
       positionUpdateTimer = new Timer(10);
       positionUpdateTimer.addEventListener('timer', positionUpdateTimerHandler);
@@ -80,7 +73,6 @@
       remixButton.enabled = false;
 
       sound = null;
-      samples = null;
 
       resetPlayer();
     }
@@ -169,7 +161,6 @@
       callJs('setAnalysis', trackLoader.analysisLoader.analysis);
       clearStatus();
       remixButton.enabled = true;
-      preparePlayer();
     }
 
     private function echoNestErrorEventHandler(error:EchoNestErrorEvent):void {
@@ -202,10 +193,9 @@
 
       remixPlayer = new SampleSourcePlayer();
       remixPlayer.addEventListener(Event.SOUND_COMPLETE, playerSoundCompleteHandler);
-      if (samples) {
-        remixPlayer.sampleSource = discontinuousRemix(samples);
-        enablePlayer();
-      }
+
+      remixPlayer.sampleSource = manager.buildSourceList(sound);
+      enablePlayer();
     }
 
     private function enablePlayer():void {
@@ -216,14 +206,6 @@
     private function playerSoundCompleteHandler(e:Event):void {
       positionUpdateTimer.stop();
       preparePlayer();
-    }
-
-    private function discontinuousRemix(sampleRanges:Array):ISampleSource {
-      var sampleSource:SourceList = new SourceList();
-
-      sampleSource.sources = sampleRanges;
-
-      return sampleSource;
     }
 
     private function togglePlayPause():void {
@@ -264,44 +246,11 @@
     }
 
     private function remixButtonHandler():void {
-      preparePlayer();
       callJs('remix');
     }
 
     private function setRemixString(string:String):void {
-      setRemix(parseRemixString(string));
-    }
-
-    private function parseRemixString(string:String):Array {
-      var array:Array = JSON.decode(string);
-      var result:Array = [];
-      var soundSampleSource:SoundSampleSource = new SoundSampleSource(sound);
-      for (var i:int = 0; i < array.length - 1; i++) {
-        var item:Array = array[i];
-        var startOffset:Number = Math.round(Number(item[0]) * 44100);
-        var endOffset:Number = Math.round(Number(item[1]) * 44100);
-        var length:Number = endOffset - startOffset;
-        var range:RangeSampleSource = new RangeSampleSource(soundSampleSource, startOffset, length);
-        var source:ISampleSource = range;
-        if (item.length > 2) {
-          var options:Object = item[2];
-          var filterSpecs:Object = options.filters;
-          if (filterSpecs) {
-            for each (var filterSpec:Object in filterSpecs) {
-              var factory:IFilterFactory = filterFactories[filterSpec.name];
-              source = factory.createFilter(source, filterSpec.options);
-            }
-          }
-        }
-        result.push(source);
-      }
-
-      return result;
-    }
-
-    private function setRemix(sources:Array):void {
-      samples = sources;
-      remixPlayer.sampleSource = discontinuousRemix(sources);
+      manager.setRemixString(string);
       preparePlayer();
       play();
     }

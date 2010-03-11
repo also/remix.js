@@ -29,6 +29,7 @@ var Remix = {
     },
 
     __setAnalysis: function(analysis) {
+        localStorage.remixAnalysis = JSON.stringify(analysis);
         this.analysis = new AudioAnalysis(analysis);
     },
 
