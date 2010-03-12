@@ -6,6 +6,10 @@ LIBRARIES = ['build/echo-nest-flash-api.swc', 'build/flash-audio.swc', 'build/so
 
 STATIC_FILES = ['README.markdown', 'LICENSE.txt']
 
+AS_FILES = FileList.new('src/as/**/*.as')
+
+task :default => :example
+
 task :init => ['lib/MP3FileReferenceLoaderLib/MP3FileReferenceLoaderLib.swc', 'lib/as3corelib-.92.1/lib/as3corelib.swc', :submodule]
 
 task :submodule do
@@ -60,7 +64,7 @@ end
 
 directory 'dist'
 
-file 'dist/remix.swf' => ['src/editor/player.mxml'] + LIBRARIES do
+file 'dist/remix.swf' => ['src/editor/player.mxml'] + AS_FILES + LIBRARIES do
   sh "mxmlc#{MXMLCFLAGS} -source-path src/as -library-path+=#{LIBRARIES.join(',')} -output dist/remix.swf -- src/editor/player.mxml"
 end
 

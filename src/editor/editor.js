@@ -3,9 +3,12 @@ var Remix = {
         if (apiKey) {
             localStorage.echoNestApiKey = apiKey;
         }
-        swfobject.embedSWF('remix.swf', 'swf', '400', '120', '9.0.0', null, {apiKey: localStorage.echoNestApiKey});
+        swfobject.embedSWF('remix.swf', 'swf', '0', '0', '9.0.0', null, {apiKey: localStorage.echoNestApiKey}, {wmode: 'transparent'});
         this._remixJsElt = document.getElementById('remixJs');
         this._progressElt = document.getElementById('progress');
+
+        this._tracks = [];
+        this._trackMap = {};
 
         if (location.hash) {
             Remix._loadScript();
@@ -28,26 +31,65 @@ var Remix = {
         this._swf = document.getElementById('swf');
     },
 
+    __setTrackState: function (trackId, state, arg) {
+        console.log('state: ', trackId, state, arg);
+        var track = this._trackMap[trackId];
+        if (!track) {
+            track = {id: trackId};
+            this._trackMap[trackId] = track;
+            this._tracks.push(track);
+        }
+        track.state = state;
+        if (state == 'sound_loading') {
+            track.file = arg;
+        }
+        else if (state == 'md5_calculated') {
+            track.md5 = arg;
+            var analysisString = localStorage['analysis_' + track.md5];
+            if (analysisString) {
+                track.rawAnalysis = JSON.parse(analysisString);
+                track.analysis = new AudioAnalysis(track.rawAnalysis);
+                track.analysis.track = track;
+            }
+            else {
+                this._swf.loadAnalysis(trackId);
+            }
+        }
+        else if (state == 'analysis_loaded') {
+            track.rawAnalysis = arg;
+            track.analysis = new AudioAnalysis(track.rawAnalysis);
+            track.analysis.track = track;
+            localStorage['analysis_' + track.md5] = JSON.stringify(track.rawAnalysis);
+        }
+    },
+
     __setAnalysis: function(analysis) {
         localStorage.remixAnalysis = JSON.stringify(analysis);
         this.analysis = new AudioAnalysis(analysis);
     },
 
-    __remix: function() {
+    run: function() {
+        var remixCalled = false;
+        // TODO use copies
+        var prefix = 'var play = function () {Remix._doRemix.apply(Remix, arguments); remixCalled = true;};var tracks = Remix._tracks;var track = tracks[0]; var analysis = track.analysis;'
         try {
-            eval(this._remixJsElt.value);
+            eval(prefix + '\n' + this._remixJsElt.value);
+            if (!remixCalled) {
+                Remix.onError('Call the play() function to play your remix');
+            }
         }
         catch(e) {
             alert(e);
             return;
         }
-        if (remix == null) {
-            alert('remix function not found!');
-            return;
-        }
-        try {
-            var aqs = remix(this.analysis);
+    },
 
+    togglePlayPause: function () {
+        this._swf.togglePlayPause();
+    },
+
+    _doRemix: function(aqs) {
+        try {
             if (!aqs) {
                 alert('remix must return an array of audio quanta');
                 return;
@@ -67,7 +109,7 @@ var Remix = {
                     return;
                 }
                 remixDuration += aq.end - aq.start;
-                var spec = [aq.start, aq.end];
+                var spec = [aq.container.analysis.track.id, aq.start, aq.end];
                 if (aq.filters) {
                     spec.push({filters: aq.filters});
                 }
@@ -76,7 +118,7 @@ var Remix = {
 
 
             if (this.onRemix) {
-                this.onRemix();
+                //this.onRemix();
             }
             this._swf.setRemixString(JSON.stringify(this.mixSpec));
         }
