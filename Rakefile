@@ -76,6 +76,7 @@ task :example => ['dist/remix.swf', 'dist/remix.js'] + EXAMPLE_STATIC_FILES do
   sh 'mkdir -p dist/example'
   sh "cp #{EXAMPLE_STATIC_FILES} dist/example"
   sh 'cp dist/remix.swf dist/example'
+  sh 'cp lib/swfobject/swfobject.js dist/example'
 end
 
 task :swf => ['dist/remix.swf']
