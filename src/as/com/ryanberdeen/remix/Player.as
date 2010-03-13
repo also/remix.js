@@ -46,7 +46,7 @@ package com.ryanberdeen.remix {
                 remixPlayer = null;
             }
             playing = false;
-            manager.callJs('setProgress', 0);
+            manager.callJs('setProgress', 0, 0);
             positionUpdateTimer.stop();
         }
 

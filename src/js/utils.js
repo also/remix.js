@@ -29,12 +29,3 @@ if (!Array.prototype.indexOf) {
         return -1;
     };
 };
-
-if (!window.localStorage) {
-    window.localStorage = {};
-}
-
-if (''.toJSON) {
-    JSON.stringify = Object.toJSON;
-    JSON.parse = JSON.parse || function(s) { return s.evalJSON(true); };
-}
