@@ -17,14 +17,25 @@ package com.ryanberdeen.remix {
         private var trackNum:int = 0;
 
         private var sourceDescriptors:Array;
+        private var player:Player;
 
         private var filterFactories:Object = {
             'touch': new SoundTouchFilterFactory()
         }
 
-        public function Manager() {
+        public function Manager(options:Object) {
+            trackApi = new TrackApi();
+            trackApi.apiKey = options.apiKey;
             tracks = {};
+
+            player = new Player(this);
+
             ExternalInterface.addCallback('loadAnalysis', loadAnalysis);
+            ExternalInterface.addCallback('togglePlayPause', player.togglePlayPause);
+
+            // FIXME method name mismatch
+            ExternalInterface.addCallback('setRemixString', remix);
+            callJs('init');
         }
 
         // TODO make private
@@ -40,9 +51,20 @@ package com.ryanberdeen.remix {
             track.loadFile();
             return id;
         }
-        
+
         internal function setTrackState(id:String, state:String, arg:Object):void {
             callJs('setTrackState', id, state, arg);
+        }
+
+        private function remix(string:String):void {
+            try {
+                setRemixString(string);
+                player.preparePlayer(buildSourceList());
+                player.play();
+            }
+            catch (e:Error) {
+                errorHandler(e);
+            }
         }
 
         public function setRemixString(string:String):void {
@@ -77,9 +99,13 @@ package com.ryanberdeen.remix {
             result.sources = sources;
             return result;
         }
-        
+
         private function loadAnalysis(trackId:String):void {
             tracks[trackId].loadAnalysis();
+        }
+
+        private function errorHandler(e:Error):void {
+            ExternalInterface.call('console.log', e.getStackTrace());
         }
     }
 }

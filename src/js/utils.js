@@ -33,3 +33,8 @@ if (!Array.prototype.indexOf) {
 if (!window.localStorage) {
     window.localStorage = {};
 }
+
+if (''.toJSON) {
+    JSON.stringify = Object.toJSON;
+    JSON.parse = JSON.parse || function(s) { return s.evalJSON(true); };
+}

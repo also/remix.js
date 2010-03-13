@@ -1,123 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" addedToStage="init();" click="chooseFile();" paddingTop="0" paddingRight="0" paddingBottom="0" paddingLeft="0" backgroundAlpha="0">
-
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" addedToStage="init();" click="manager.loadTrackFile();" backgroundAlpha="0">
   <mx:Script><![CDATA[
-    import com.ryanberdeen.audio.SampleSourcePlayer;
-    import com.ryanberdeen.echonest.api.v3.EchoNestErrorEvent;
-    import com.ryanberdeen.echonest.api.v3.track.AnalysisEvent;
-    import com.ryanberdeen.echonest.api.v3.track.TrackApi;
-    import com.ryanberdeen.echonest.api.v3.track.utils.TrackLoader;
-    import com.ryanberdeen.echonest.api.v3.track.utils.TrackLoaderEvent;
     import com.ryanberdeen.remix.Manager;
-
-    import flash.events.Event;
-    import flash.media.Sound;
-    import flash.utils.Timer;
-
-    private var trackApi:TrackApi = new TrackApi();
-
-    private var remixPlayer:SampleSourcePlayer;
-    private var playing:Boolean;
-    //private var positionUpdateTimer:Timer;
 
     private var manager:Manager;
 
     private function init():void {
-      var options:Object = root.loaderInfo.parameters;
-      trackApi.apiKey = options.apiKey;
-
-      manager = new Manager();
-      manager.trackApi = trackApi;
-
-      /*soundpdateTimer = new Timer(10);
-      positionUpdateTimer.addEventListener('timer', positionUpdateTimerHandler);*/
-      ExternalInterface.addCallback('setRemixString', setRemixString);
-      ExternalInterface.addCallback('togglePlayPause', togglePlayPause);
-      manager.callJs('init');
-    }
-
-    private function chooseFile():void {
-      manager.loadTrackFile();
-    }
-
-    private function errorHandler(e:Error):void {
-      ExternalInterface.call('console.log', e.getStackTrace());
-    }
-
-    private function resetPlayer():void {
-      if (remixPlayer != null) {
-        remixPlayer.stop();
-
-        remixPlayer = null;
-      }
-      playing = false;
-      manager.callJs('setProgress', 0);
-      //positionUpdateTimer.stop();
-    }
-
-    private function preparePlayer():void {
-      resetPlayer();
-
-      remixPlayer = new SampleSourcePlayer();
-      remixPlayer.addEventListener(Event.SOUND_COMPLETE, playerSoundCompleteHandler);
-
-      remixPlayer.sampleSource = manager.buildSourceList();
-      enablePlayer();
-    }
-
-    private function enablePlayer():void {
-      // TODO
-    }
-
-    private function playerSoundCompleteHandler(e:Event):void {
-      //positionUpdateTimer.stop();
-      preparePlayer();
-    }
-
-    private function togglePlayPause():void {
-      if (!playing) {
-        play();
-      }
-      else {
-        pause();
-      }
-    }
-
-    private function play():void {
-      try {
-        remixPlayer.start();
-        playing = true;
-        //positionUpdateTimer.start();
-        // TODO
-      }
-      catch(e:Error) {
-        errorHandler(e);
-      }
-    }
-
-    private function pause():void {
-      remixPlayer.stop();
-      playing = false;
-      //positionUpdateTimer.stop();
-      // TODO
-    }
-
-    /*private function positionUpdateTimerHandler(e:Event):void {
-      manager.callJs('setProgress', remixPlayer.sourcePosition / (sound.length * 44.1))
-    }*/
-
-    private function remixButtonHandler():void {
-      manager.callJs('remix');
-    }
-
-    private function setRemixString(string:String):void {
-      try {
-        manager.setRemixString(string);
-        preparePlayer();
-        play();
-      }
-      catch (e:Error) {errorHandler(e);}
+      manager = new Manager(root.loaderInfo.parameters);
     }
   ]]></mx:Script>
 </mx:Application>

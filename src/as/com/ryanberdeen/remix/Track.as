@@ -101,7 +101,7 @@ package com.ryanberdeen.remix {
                 onEchoNestError: function(error:EchoNestError):void {
                     // FIXME set state
                 },
-                onError: function(error:Event) {
+                onError: function(error:Event):void {
                     // FIXME setState
                 }
             });

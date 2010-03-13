@@ -38,10 +38,15 @@ var Remix = {
             track = {id: trackId};
             this._trackMap[trackId] = track;
             this._tracks.push(track);
+            this.onTrackAdded(track);
         }
         track.state = state;
         if (state == 'sound_loading') {
             track.file = arg;
+            this.onTrackSoundLoading(track);
+        }
+        else if (state == 'sound_loaded') {
+            this.onTrackSoundLoaded(track);
         }
         else if (state == 'md5_calculated') {
             track.md5 = arg;
@@ -50,23 +55,33 @@ var Remix = {
                 track.rawAnalysis = JSON.parse(analysisString);
                 track.analysis = new AudioAnalysis(track.rawAnalysis);
                 track.analysis.track = track;
+                this.onTrackAnalysisLoaded(track);
             }
             else {
                 this._swf.loadAnalysis(trackId);
             }
+        }
+        else if (state == 'analysis_loading') {
+            this.onTrackAnalysisLoading(track);
         }
         else if (state == 'analysis_loaded') {
             track.rawAnalysis = arg;
             track.analysis = new AudioAnalysis(track.rawAnalysis);
             track.analysis.track = track;
             localStorage['analysis_' + track.md5] = JSON.stringify(track.rawAnalysis);
+            this.onTrackAnalysisLoaded(track);
         }
     },
 
-    __setAnalysis: function(analysis) {
-        localStorage.remixAnalysis = JSON.stringify(analysis);
-        this.analysis = new AudioAnalysis(analysis);
-    },
+    onTrackAdded: function (track) {},
+
+    onTrackSoundLoading: function (track) {},
+
+    onTrackSoundLoaded: function (track) {},
+
+    onTrackAnalysisLoading: function (track) {},
+
+    onTrackAnalysisLoaded: function (track) {},
 
     run: function() {
         var remixCalled = false;
@@ -79,7 +94,7 @@ var Remix = {
             }
         }
         catch(e) {
-            alert(e);
+            Remix.onError(e);
             return;
         }
     },
@@ -91,24 +106,17 @@ var Remix = {
     _doRemix: function(aqs) {
         try {
             if (!aqs) {
-                alert('remix must return an array of audio quanta');
-                return;
-            }
-
-            if (aqs.length == 0) {
-                alert('remix must return at least one audio quantum');
+                Remix.onError('remix must return an array of audio quanta');
                 return;
             }
 
             this.mixSpec = [];
-            remixDuration = 0;
             for (var i = 0; i < aqs.length; i++) {
                 var aq = aqs[i];
-                if (aq.end <= aq.start) {
-                    alert('end position ' + i + ' is not after start position');
+                if (aq.end < aq.start) {
+                    Remix.onError('end position ' + i + ' is before start position');
                     return;
                 }
-                remixDuration += aq.end - aq.start;
                 var spec = [aq.container.analysis.track.id, aq.start, aq.end];
                 if (aq.filters) {
                     spec.push({filters: aq.filters});
@@ -123,11 +131,15 @@ var Remix = {
             this._swf.setRemixString(JSON.stringify(this.mixSpec));
         }
         catch (e) {
-            alert(e);
+            Remix.onError(e);
         }
     },
 
-    __setProgress: function(progress) {
+    __setProgress: function(progress, sourceIndex, sourcePosition) {
+        if (sourceIndex != this._sourceIndex) {
+            console.log(sourceIndex);
+            this._sourceIndex = sourceIndex;
+        }
         this._progressElt.style.width = 100 * progress + '%';
     },
 
@@ -136,7 +148,7 @@ var Remix = {
             this._remixJsElt.value = remix;
         }
         else {
-            alert('Remix function not found in script.');
+            Remix.onError('Remix function not found in script.');
         }
     },
 
