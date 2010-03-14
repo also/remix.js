@@ -104,7 +104,7 @@ package com.ryanberdeen.remix {
             tracks[trackId].loadAnalysis();
         }
 
-        private function errorHandler(e:Error):void {
+        public function errorHandler(e:Error):void {
             ExternalInterface.call('console.log', e.getStackTrace());
         }
     }

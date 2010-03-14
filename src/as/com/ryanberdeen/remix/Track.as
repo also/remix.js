@@ -51,8 +51,8 @@ package com.ryanberdeen.remix {
 
         private function soundLoadCompleteHandler(e:MP3SoundEvent):void {
             // TODO send track info (length etc.)
-            setState('sound_loaded', null);
             _sound = e.sound;
+            setState('sound_loaded', {length: _sound.length / 1000});
             mp3Loader.removeEventListener(Event.COMPLETE, soundLoadCompleteHandler);
             mp3Loader = null;
 

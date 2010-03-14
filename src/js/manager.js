@@ -38,6 +38,8 @@ var Remix = {
             this.onTrackSoundLoading(track);
         }
         else if (state == 'sound_loaded') {
+            track.sound = arg;
+            track.soundLoaded = true;
             this.onTrackSoundLoaded(track);
         }
         else if (state == 'md5_calculated') {
@@ -47,6 +49,7 @@ var Remix = {
                 track.rawAnalysis = JSON.parse(analysisString);
                 track.analysis = new AudioAnalysis(track.rawAnalysis);
                 track.analysis.track = track;
+                track.analysisLoaded = true;
                 this.onTrackAnalysisLoaded(track);
             }
             else {
@@ -61,6 +64,7 @@ var Remix = {
             track.analysis = new AudioAnalysis(track.rawAnalysis);
             track.analysis.track = track;
             localStorage['analysis_' + track.md5] = JSON.stringify(track.rawAnalysis);
+            track.analysisLoaded = true;
             this.onTrackAnalysisLoaded(track);
         }
     },
@@ -85,6 +89,20 @@ var Remix = {
 
     onPlayerProgress: function (progress, sourceIndex, sourcePosition) {},
 
+    __setPlayerState: function (state) {
+        this['onPlayer' + state[0].toUpperCase() + state.substring(1)]();
+    },
+
+    onPlayerReady: function () {},
+
+    onPlayerEmpty: function () {},
+
+    onPlayerPlaying: function () {},
+
+    onPlayerPaused: function () {},
+
+    onPlayerComplete: function () {},
+
     remix: function(aqs) {
         try {
             if (!aqs) {
@@ -99,7 +117,8 @@ var Remix = {
                     Remix.onError('end position ' + i + ' is before start position');
                     return;
                 }
-                var spec = [aq.container.analysis.track.id, aq.start, aq.end];
+                var track = aq.track || aq.container.analysis.track;
+                var spec = [track.id, aq.start, aq.end];
                 if (aq.filters) {
                     spec.push({filters: aq.filters});
                 }

@@ -26,17 +26,13 @@ package com.ryanberdeen.remix {
             remixPlayer.addEventListener(Event.SOUND_COMPLETE, playerSoundCompleteHandler);
 
             remixPlayer.sampleSource = sourceList;
-            enablePlayer();
+            setState('ready');
         }
 
         private function positionUpdateTimerHandler(e:Event):void {
             var position:Number = remixPlayer.position;
             var source:Object = sourceList.getSource(position);
             manager.callJs('setProgress',  position / sourceList.length, source.index, source.position);
-        }
-
-        private function enablePlayer():void {
-            // TODO
         }
 
         private function resetPlayer():void {
@@ -46,12 +42,14 @@ package com.ryanberdeen.remix {
                 remixPlayer = null;
             }
             playing = false;
-            manager.callJs('setProgress', 0, 0);
             positionUpdateTimer.stop();
+            setState('empty');
         }
 
         private function playerSoundCompleteHandler(e:Event):void {
             positionUpdateTimer.stop();
+            setState('complete');
+            setState('paused');
             // FIXME
             //preparePlayer();
         }
@@ -69,6 +67,7 @@ package com.ryanberdeen.remix {
             remixPlayer.start();
             playing = true;
             positionUpdateTimer.start();
+            setState('playing');
             // TODO
         }
 
@@ -76,7 +75,12 @@ package com.ryanberdeen.remix {
             remixPlayer.stop();
             playing = false;
             positionUpdateTimer.stop();
+            setState('paused');
             // TODO
+        }
+
+        private function setState(state:String) {
+            manager.callJs('setPlayerState', state);
         }
     }
 }
