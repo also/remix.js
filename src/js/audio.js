@@ -37,6 +37,7 @@ extend(AudioQuantum.prototype, {
         that.start = this.start;
         that.end = this.end;
         that.duration = this.duration;
+        that.container = this.container;
         return that;
     },
 
