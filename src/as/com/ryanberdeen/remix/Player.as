@@ -16,6 +16,7 @@ package com.ryanberdeen.remix {
             this.manager = manager;
             positionUpdateTimer = new Timer(10);
             positionUpdateTimer.addEventListener('timer', positionUpdateTimerHandler);
+            setState('empty');
         }
 
         public function preparePlayer(sourceList:SourceList):void {
@@ -50,7 +51,6 @@ package com.ryanberdeen.remix {
             positionUpdateTimer.stop();
             setState('complete');
             setState('paused');
-            // FIXME
             //preparePlayer();
         }
 
@@ -68,7 +68,6 @@ package com.ryanberdeen.remix {
             playing = true;
             positionUpdateTimer.start();
             setState('playing');
-            // TODO
         }
 
         private function pause():void {
@@ -76,7 +75,6 @@ package com.ryanberdeen.remix {
             playing = false;
             positionUpdateTimer.stop();
             setState('paused');
-            // TODO
         }
 
         private function setState(state:String) {

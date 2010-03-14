@@ -73,7 +73,7 @@ package com.ryanberdeen.remix {
 
         public function buildSourceList():SourceList {
             var sources:Array = [];
-            for (var i:int = 0; i < sourceDescriptors.length - 1; i++) {
+            for (var i:int = 0; i < sourceDescriptors.length; i++) {
                 var item:Array = sourceDescriptors[i];
                 var track:Track = tracks[item[0]];
                 var startOffset:Number = Math.round(Number(item[1]) * 44100);

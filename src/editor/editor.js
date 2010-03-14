@@ -23,7 +23,7 @@ var Editor = {
             console.log(sourceIndex);
             this._sourceIndex = sourceIndex;
         }
-        this._progressElt.style.width = 100 * progress + '%';
+        Editor._progressElt.style.width = 100 * progress + '%';
     },
 
     _scriptLoaded: function() {
@@ -42,10 +42,16 @@ var Editor = {
 
     run: function() {
         var remixCalled = false;
+        var play = function () {
+            Remix.remix.apply(Remix, arguments);
+            remixCalled = true;
+        };
         // TODO use copies
-        var prefix = 'var play = function () {Remix.remix.apply(Remix, arguments); remixCalled = true;};var tracks = Remix._tracks;var track = tracks[0]; var analysis = track.analysis;'
+        var tracks = Remix._tracks;
+        var track = this.selectedTrack || tracks[0];
+        var analysis = track.analysis;
         try {
-            eval(prefix + '\n' + this._remixJsElt.value);
+            eval(this._remixJsElt.value);
             if (!remixCalled) {
                 Remix.onError('Call the play() function to play your remix');
             }
