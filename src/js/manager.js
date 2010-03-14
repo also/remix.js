@@ -21,6 +21,8 @@ var Remix = {
 
     onError: function(message) {},
 
+    log: function () {},
+
     __init: function() {
         this._swf = document.getElementById('swf');
     },
@@ -37,7 +39,7 @@ var Remix = {
     },
 
     __setTrackState: function (trackId, state, arg) {
-        console.log('state: ', trackId, state, arg);
+        Remix.log('state: ', trackId, state, arg);
         var track = this.getTrack(trackId);
         track.state = state;
         if (state == 'sound_loading') {
@@ -124,7 +126,7 @@ var Remix = {
     },
 
     __setSearchState: function (searchId, state, arg) {
-        console.log('search state: ', searchId, state, arg);
+        Remix.log('search state: ', searchId, state, arg);
         var search = this._searchMap[searchId];
         if (state == 'echo_nest_error') {
             if (arg.description == 'no results') {
@@ -190,6 +192,8 @@ var Remix = {
         return track;
     }
 };
+
+Remix.__log = Remix.log;
 
 if (!window.localStorage) {
     window.localStorage = {};

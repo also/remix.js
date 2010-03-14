@@ -20,7 +20,7 @@ var Editor = {
 
     _onPlayerProgress: function(progress, sourceIndex, sourcePosition) {
         if (sourceIndex != this._sourceIndex) {
-            console.log(sourceIndex);
+            Remix.log(sourceIndex);
             this._sourceIndex = sourceIndex;
         }
         Editor._progressElt.style.width = 100 * progress + '%';

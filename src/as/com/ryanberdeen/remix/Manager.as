@@ -136,7 +136,7 @@ package com.ryanberdeen.remix {
         }
 
         public function log(o:Object):void {
-            ExternalInterface.call('console.log', o);
+            callJs('log', o);
         }
     }
 }
