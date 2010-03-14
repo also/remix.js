@@ -16,7 +16,6 @@ var sections = analysis.sections.that(overlapRange(fadeIn, fadeOut));
 var outchunks = [];
 
 for (var i = 0; i < sections.length; i++) {
-    console.log(i);
     var section = sections[i];
     var beats = analysis.beats.that(areContainedBy(section));
     var segments = analysis.segments.that(overlap(section));
