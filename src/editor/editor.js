@@ -58,6 +58,7 @@ var Editor = {
         }
         catch(e) {
             this._onError(e);
+            throw e;
             return;
         }
     }

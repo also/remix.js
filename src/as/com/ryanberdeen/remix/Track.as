@@ -21,6 +21,7 @@ package com.ryanberdeen.remix {
         private var manager:Manager;
         public var id:String;
         private var md5:String;
+        private var enTrackId:String;
         private var trackId:String;
         private var _sound:Sound;
 
@@ -52,6 +53,7 @@ package com.ryanberdeen.remix {
             _sound.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
             _sound.addEventListener(ProgressEvent.PROGRESS, progressHandler);
             _sound.load(request);
+            this.enTrackId = enTrackId;
         }
 
         private function ioErrorHandler(e:IOErrorEvent):void {
@@ -94,10 +96,28 @@ package com.ryanberdeen.remix {
 
         /** load the analysis, and if it isn't available, upload */
         public function loadAnalysis():void {
-            setState('check_analysis', null);
-            analysisLoader = createAnalysisLoader();
-            analysisLoader.addEventListener(AnalysisEvent.UPLOAD_REQUIRED, uploadRequiredHandler);
-            analysisLoader.load({md5: md5});
+            if (this.enTrackId) {
+                setState('analysis_loading', null);
+                manager.alphaApi.getAnalysis({trackID: enTrackId}, {
+                    onResponse: analysisResponseHandler,
+                    onEchoNestError: analysisErrorHandler,
+                    onError: analysisErrorHandler
+                });
+            }
+            else {
+                setState('check_analysis', null);
+                analysisLoader = createAnalysisLoader();
+                analysisLoader.addEventListener(AnalysisEvent.UPLOAD_REQUIRED, uploadRequiredHandler);
+                analysisLoader.load({md5: md5});
+            }
+        }
+
+        private function analysisResponseHandler(response:Object):void {
+            setState('analysis_loaded', response);
+        }
+
+        private function analysisErrorHandler(event:Event):void {
+            setState('analysis_error', event);
         }
 
         private function createAnalysisLoader():AnalysisLoader {
@@ -136,10 +156,6 @@ package com.ryanberdeen.remix {
             analysisLoader.uploaded = true;
             analysisLoader.addEventListener(AnalysisEvent.UPLOAD_REQUIRED, uploadRequiredHandler);
             analysisLoader.load({id: trackId});
-        }
-
-        private function analysisErrorHandler(e:Event):void {
-            // FIXME set state
         }
 
         private function analysisCompleteHandler(e:Event):void {

@@ -1,7 +1,7 @@
 function AudioAnalysis(analysis) {
     extend(this, analysis);
 
-    var duration = this.metadata.duration;
+    var duration = this.duration;
 
     if (this.sections) {
         this.sections = AudioQuantumList.fromSections(this.sections);

@@ -51,17 +51,8 @@ var Remix = {
         }
         else if (state == 'md5_calculated') {
             track.md5 = arg;
-            var analysisString = localStorage['analysis_' + track.md5];
-            if (analysisString) {
-                track.rawAnalysis = JSON.parse(analysisString);
-                track.analysis = new AudioAnalysis(track.rawAnalysis);
-                track.analysis.track = track;
-                track.analysisLoaded = true;
-                this.onTrackAnalysisLoaded(track);
-            }
-            else {
-                this._swf.loadAnalysis(trackId);
-            }
+            track.key = arg;
+            this._loadAnalysis(track);
         }
         else if (state == 'analysis_loading') {
             this.onTrackAnalysisLoading(track);
@@ -70,9 +61,23 @@ var Remix = {
             track.rawAnalysis = arg;
             track.analysis = new AudioAnalysis(track.rawAnalysis);
             track.analysis.track = track;
-            localStorage['analysis_' + track.md5] = JSON.stringify(track.rawAnalysis);
+            localStorage['analysis_' + track.key] = JSON.stringify(track.rawAnalysis);
             track.analysisLoaded = true;
             this.onTrackAnalysisLoaded(track);
+        }
+    },
+
+    _loadAnalysis: function (track) {
+        var analysisString = localStorage['analysis_' + track.key];
+        if (analysisString) {
+            track.rawAnalysis = JSON.parse(analysisString);
+            track.analysis = new AudioAnalysis(track.rawAnalysis);
+            track.analysis.track = track;
+            track.analysisLoaded = true;
+            this.onTrackAnalysisLoaded(track);
+        }
+        else {
+            this._swf.loadAnalysis(track.id);
         }
     },
 
@@ -170,11 +175,16 @@ var Remix = {
         }
         catch (e) {
             Remix.onError(e);
+            throw e;
         }
     },
 
     load: function (url, enTrackId) {
-        return this._swf.load(url, enTrackId);
+        var trackId = this._swf.load(url, enTrackId);
+        var track = this.getTrack(trackId);
+        track.key = enTrackId;
+        this._loadAnalysis(track);
+        return track;
     }
 };
 
