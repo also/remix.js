@@ -179,7 +179,6 @@ var Remix = {
         }
         catch (e) {
             Remix.onError(e);
-            throw e;
         }
     },
 

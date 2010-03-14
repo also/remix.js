@@ -49,6 +49,10 @@ var Editor = {
         // TODO use copies
         var tracks = Remix._tracks;
         var track = this.selectedTrack || tracks[0];
+        if (!track) {
+            Remix.onError('No tracks available.');
+            return;
+        }
         var analysis = track.analysis;
         try {
             eval(this._remixJsElt.value);
@@ -57,8 +61,7 @@ var Editor = {
             }
         }
         catch(e) {
-            this._onError(e);
-            throw e;
+            Remix.onError(e);
             return;
         }
     }
