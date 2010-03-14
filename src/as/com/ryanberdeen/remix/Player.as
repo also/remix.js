@@ -77,7 +77,7 @@ package com.ryanberdeen.remix {
             setState('paused');
         }
 
-        private function setState(state:String) {
+        private function setState(state:String):void {
             manager.callJs('setPlayerState', state);
         }
     }

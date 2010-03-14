@@ -8,6 +8,8 @@ var Remix = {
         this._tracks = [];
         this._trackMap = {};
 
+        this._searchMap = {};
+
         // add selection and sorting functions to global scope
         extend(window, selection);
         extend(window, sorting);
@@ -23,8 +25,7 @@ var Remix = {
         this._swf = document.getElementById('swf');
     },
 
-    __setTrackState: function (trackId, state, arg) {
-        console.log('state: ', trackId, state, arg);
+    getTrack: function(trackId) {
         var track = this._trackMap[trackId];
         if (!track) {
             track = {id: trackId};
@@ -32,6 +33,12 @@ var Remix = {
             this._tracks.push(track);
             this.onTrackAdded(track);
         }
+        return track;
+    },
+
+    __setTrackState: function (trackId, state, arg) {
+        console.log('state: ', trackId, state, arg);
+        var track = this.getTrack(trackId);
         track.state = state;
         if (state == 'sound_loading') {
             track.file = arg;
@@ -103,6 +110,36 @@ var Remix = {
 
     onPlayerComplete: function () {},
 
+    search: function (params) {
+        var search = {params: params};
+        var searchId = this._swf.search(params);
+        search.id = searchId;
+        this._searchMap[searchId] = search;
+        return search;
+    },
+
+    __setSearchState: function (searchId, state, arg) {
+        console.log('search state: ', searchId, state, arg);
+        var search = this._searchMap[searchId];
+        if (state == 'echo_nest_error') {
+            if (args.description == 'no results') {
+                this.onSearchNoResults(search);
+            }
+            else {
+                search.error = arg;
+                this.onSearchError(search);
+            }
+        }
+        else if (state == 'complete') {
+            search.results = arg;
+            this.onSearchResults(search);
+        }
+    },
+
+    onSearchResults: function (search) {},
+
+    onSearchNoResults: function (search) {},
+
     remix: function(aqs) {
         try {
             if (!aqs) {
@@ -134,6 +171,10 @@ var Remix = {
         catch (e) {
             Remix.onError(e);
         }
+    },
+
+    load: function (url, enTrackId) {
+        return this._swf.load(url, enTrackId);
     }
 };
 
