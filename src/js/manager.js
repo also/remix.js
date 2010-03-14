@@ -127,13 +127,17 @@ var Remix = {
         console.log('search state: ', searchId, state, arg);
         var search = this._searchMap[searchId];
         if (state == 'echo_nest_error') {
-            if (args.description == 'no results') {
+            if (arg.description == 'no results') {
                 this.onSearchNoResults(search);
             }
             else {
                 search.error = arg;
                 this.onSearchError(search);
             }
+        }
+        else if (state == 'error') {
+            search.error = arg;
+            this.onSearchError(search);
         }
         else if (state == 'complete') {
             search.results = arg;
