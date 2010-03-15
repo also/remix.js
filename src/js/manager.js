@@ -38,6 +38,13 @@ var Remix = {
         return track;
     },
 
+    removeTrack: function (track) {
+        var i = this._tracks.indexOf(track);
+        this._tracks.splice(i, 1);
+        delete this._trackMap[track.id];
+        this._swf.unloadTrack(track.id);
+    },
+
     __setTrackState: function (trackId, state, arg) {
         Remix.log('state: ', trackId, state, arg);
         var track = this.getTrack(trackId);

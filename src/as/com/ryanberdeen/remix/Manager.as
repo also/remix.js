@@ -44,6 +44,7 @@ package com.ryanberdeen.remix {
             ExternalInterface.addCallback('setRemixString', remix);
             ExternalInterface.addCallback('search', search);
             ExternalInterface.addCallback('load', load);
+            ExternalInterface.addCallback('unloadTrack', unloadTrack);
             callJs('init');
         }
 
@@ -70,6 +71,10 @@ package com.ryanberdeen.remix {
             var track:Track = createTrack();
             track.load(url, enTrackId);
             return track.id;
+        }
+
+        public function unloadTrack(trackId:String):void {
+            delete tracks[trackId];
         }
 
         public function search(params:Object):String {
