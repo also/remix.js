@@ -6,6 +6,8 @@ var Editor = {
         });
         Remix.init(apiKey);
 
+        this._snips = {};
+
         this._remixJsElt = document.getElementById('remixJs');
         this._progressElt = document.getElementById('progress');
 
@@ -54,6 +56,7 @@ var Editor = {
             return;
         }
         var analysis = track.analysis;
+        var snips = this._snips;
         try {
             eval(this._remixJsElt.value);
             if (!remixCalled) {
