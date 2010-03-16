@@ -10,6 +10,7 @@ Array.prototype.sum = function() {
     for (var i = 0; i < this.length; i++) {
         result += this[i];
     }
+    return result;
 };
 
 if (!Array.prototype.indexOf) {
