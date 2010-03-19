@@ -46,7 +46,7 @@ var Remix = {
     },
 
     __setTrackState: function (trackId, state, arg) {
-        Remix.log('state: ', trackId, state, arg);
+        Remix.log('track state: ', trackId, state, arg);
         var track = this.getTrack(trackId);
         track.state = state;
         if (state == 'sound_loading') {
@@ -164,6 +164,8 @@ var Remix = {
                 Remix.onError('remix must return an array of audio quanta');
                 return;
             }
+
+            aqs = aqs.flatten();
 
             this.mixSpec = [];
             for (var i = 0; i < aqs.length; i++) {
