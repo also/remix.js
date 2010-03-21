@@ -42,7 +42,15 @@ var Editor = {
         document.write('<script src="' + location.hash.substring(1) + '" onload="Editor._scriptLoaded();"><' + '/script>');
     },
 
+    getScript: function () {
+        return this._remixJsElt.value;
+    },
+
     run: function() {
+        var script = this.getScript();
+        if (!script) {
+            return;
+        }
         var remixCalled = false;
         var play = function () {
             Remix.remix.apply(Remix, arguments);
@@ -58,14 +66,13 @@ var Editor = {
         var analysis = track.analysis;
         var snips = this._snips;
         try {
-            eval(this._remixJsElt.value);
+            eval(script);
             if (!remixCalled) {
                 Remix.onError('Call the play() function to play your remix');
             }
         }
         catch(e) {
             Remix.onError(e);
-            return;
         }
     }
 };
