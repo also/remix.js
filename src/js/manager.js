@@ -186,11 +186,15 @@ var Remix = {
             if (this.onRemix) {
                 //this.onRemix();
             }
-            this._swf.setRemixString(JSON.stringify(this.mixSpec));
+            this.remixString(JSON.stringify(this.mixSpec));
         }
         catch (e) {
             Remix.onError(e);
         }
+    },
+
+    remixString: function (string) {
+        this._swf.setRemixString(string);
     },
 
     load: function (url, enTrackId) {
