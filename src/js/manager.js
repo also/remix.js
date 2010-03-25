@@ -1,6 +1,7 @@
 var Remix = {
     init: function(apiKey) {
         if (apiKey) {
+            // TODO handle quota exception
             localStorage.echoNestApiKey = apiKey;
         }
         swfobject.embedSWF('remix.swf', 'swf', '0', '0', '9.0.0', null, {apiKey: localStorage.echoNestApiKey}, {wmode: 'transparent'});

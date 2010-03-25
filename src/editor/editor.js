@@ -10,10 +10,6 @@ var Editor = {
 
         this._remixJsElt = document.getElementById('remixJs');
         this._progressElt = document.getElementById('progress');
-
-        if (location.hash) {
-            this._loadScript();
-        }
     },
 
     _onError: function(message) {
@@ -26,20 +22,6 @@ var Editor = {
             this._sourceIndex = sourceIndex;
         }
         Editor._progressElt.style.width = 100 * progress + '%';
-    },
-
-    _scriptLoaded: function() {
-        if (remix) {
-            this._remixJsElt.value = remix;
-        }
-        else {
-            Remix.onError('Remix function not found in script.');
-        }
-    },
-
-    _loadScript: function() {
-        remix = null;
-        document.write('<script src="' + location.hash.substring(1) + '" onload="Editor._scriptLoaded();"><' + '/script>');
     },
 
     getScript: function () {
