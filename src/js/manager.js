@@ -165,7 +165,12 @@ var Remix = {
                 return;
             }
 
-            aqs = aqs.flatten();
+            if (aqs.flatten) {
+                aqs = aqs.flatten();
+            }
+            else {
+                aqs = [aqs];
+            }
 
             this.mixSpec = [];
             for (var i = 0; i < aqs.length; i++) {
