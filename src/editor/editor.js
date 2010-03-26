@@ -45,6 +45,7 @@ var Editor = {
             Remix.onError('No tracks available.');
             return;
         }
+        var selection = track.selection;
         var analysis = track.analysis;
         var snips = this._snips;
         try {
