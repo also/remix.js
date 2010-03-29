@@ -1,27 +1,17 @@
 var Editor = {
     init: function (apiKey) {
         extend(Remix, {
-            onError: this._onError,
-            onPlayerProgress: this._onPlayerProgress
+            onError: this._onError
         });
         Remix.init(apiKey);
 
         this._snips = {};
 
         this._remixJsElt = document.getElementById('remixJs');
-        this._progressElt = document.getElementById('progress');
     },
 
     _onError: function(message) {
         alert(message);
-    },
-
-    _onPlayerProgress: function(progress, sourceIndex, sourcePosition) {
-        if (sourceIndex != this._sourceIndex) {
-            Remix.log(sourceIndex);
-            this._sourceIndex = sourceIndex;
-        }
-        Editor._progressElt.style.width = 100 * progress + '%';
     },
 
     getScript: function () {
