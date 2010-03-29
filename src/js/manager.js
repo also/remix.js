@@ -173,6 +173,8 @@ var Remix = {
                 aqs = [aqs];
             }
 
+            var outAqs = [];
+            var offset = 0;
             this.mixSpec = [];
             for (var i = 0; i < aqs.length; i++) {
                 var aq = aqs[i];
@@ -182,21 +184,40 @@ var Remix = {
                 }
                 var track = aq.track || aq.container.analysis.track;
                 var spec = [track.id, aq.start, aq.end];
+                var duration = aq.end - aq.start;
+                outAqs.push({
+                    track: track,
+                    start: aq.start,
+                    end: aq.end,
+                    index: i,
+                    duration: duration,
+                    offset: offset,
+                    filters: aq.filters});
+
                 if (aq.filters) {
                     spec.push({filters: aq.filters});
                 }
                 this.mixSpec.push(spec);
+                offset += duration;
             }
 
 
             if (this.onRemix) {
-                //this.onRemix();
+                this.onRemix(outAqs);
             }
+            this.playingSingleRange = false;
             this.remixString(JSON.stringify(this.mixSpec));
         }
         catch (e) {
             Remix.onError(e);
         }
+    },
+
+    play: function (aq) {
+        var track = aq.track || aq.container.analysis.track;
+        var spec = [track.id, aq.start, aq.end];
+        this.playingSingleRange = true;
+        this.remixString(JSON.stringify([spec]));
     },
 
     remixString: function (string) {
