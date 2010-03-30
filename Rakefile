@@ -1,6 +1,5 @@
 MXMLCFLAGS = ' -target-player 10.0.0'
 REMIX_SRC_FILES = FileList.new('src/js/**/*.js')
-EXAMPLE_STATIC_FILES = FileList.new('src/editor/*') { |fl| fl.exclude('src/editor/player.mxml') }
 
 LIBRARIES = ['build/echo-nest-flash-api.swc', 'build/flash-audio.swc', 'build/soundtouch-as3.swc', 'lib/as3corelib-.92.1/lib/as3corelib.swc']
 
@@ -8,7 +7,7 @@ STATIC_FILES = ['README.markdown', 'LICENSE.txt']
 
 AS_FILES = FileList.new('src/as/**/*.as')
 
-task :default => :example
+task :default => :src_dist
 
 task :init => ['lib/MP3FileReferenceLoaderLib/MP3FileReferenceLoaderLib.swc', 'lib/as3corelib-.92.1/lib/as3corelib.swc', :submodule]
 
@@ -70,13 +69,6 @@ end
 
 file 'dist/remix.js' => ['dist'] + REMIX_SRC_FILES do
   sh "cat #{REMIX_SRC_FILES} > dist/remix.js"
-end
-
-task :example => ['dist/remix.swf', 'dist/remix.js'] + EXAMPLE_STATIC_FILES do
-  sh 'mkdir -p dist/example'
-  sh "cp #{EXAMPLE_STATIC_FILES} dist/example"
-  sh 'cp dist/remix.swf dist/example'
-  sh 'cp lib/swfobject/swfobject.js dist/example'
 end
 
 task :swf => ['dist/remix.swf']
