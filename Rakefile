@@ -7,7 +7,7 @@ STATIC_FILES = ['README.markdown', 'LICENSE.txt']
 
 AS_FILES = FileList.new('src/as/**/*.as')
 
-task :default => :src_dist
+task :default => :all
 
 task :init => ['lib/MP3FileReferenceLoaderLib/MP3FileReferenceLoaderLib.swc', 'lib/as3corelib-.92.1/lib/as3corelib.swc', :submodule]
 
@@ -74,6 +74,8 @@ end
 task :swf => ['dist/remix.swf']
 
 task :js => ['dist/remix.js']
+
+task :all => [:swf, :js]
 
 task :clean do
   sh 'rm -rf dist'
