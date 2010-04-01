@@ -165,16 +165,7 @@ var Remix = {
                 Remix.onError('remix must return an array of audio quanta');
                 return;
             }
-
-            if (aqs.flatten) {
-                aqs = aqs.flatten();
-            }
-            else {
-                aqs = [aqs];
-            }
-
-            var outAqs = [];
-            var offset = 0;
+            aqs = Remix.processAqs(aqs);
             this.mixSpec = [];
             for (var i = 0; i < aqs.length; i++) {
                 var aq = aqs[i];
@@ -184,26 +175,15 @@ var Remix = {
                 }
                 var track = aq.track || aq.container.analysis.track;
                 var spec = [track.id, aq.start, aq.end];
-                var duration = aq.end - aq.start;
-                outAqs.push({
-                    track: track,
-                    start: aq.start,
-                    end: aq.end,
-                    index: i,
-                    duration: duration,
-                    offset: offset,
-                    filters: aq.filters});
 
                 if (aq.filters) {
                     spec.push({filters: aq.filters});
                 }
                 this.mixSpec.push(spec);
-                offset += duration;
             }
 
-
             if (this.onRemix) {
-                this.onRemix(outAqs);
+                this.onRemix(aqs);
             }
             this.playingSingleRange = false;
             this.remixString(JSON.stringify(this.mixSpec));
@@ -211,6 +191,34 @@ var Remix = {
         catch (e) {
             Remix.onError(e);
         }
+    },
+
+    processAqs: function(aqs) {
+        if (aqs.flatten) {
+            aqs = aqs.flatten();
+        }
+        else {
+            aqs = [aqs];
+        }
+        var result = [];
+        var offset = 0;
+        for (var i = 0; i < aqs.length; i++) {
+            var aq = aqs[i];
+            var track = aq.track || aq.container.analysis.track;
+            var duration = aq.end - aq.start;
+            result.push({
+                track: track,
+                source: aq,
+                start: aq.start,
+                end: aq.end,
+                index: i,
+                duration: duration,
+                offset: offset,
+                filters: aq.filters});
+
+            offset += duration;
+        }
+        return result;
     },
 
     play: function (aq) {
