@@ -39,7 +39,7 @@ package com.ryanberdeen.remix {
 
             ExternalInterface.addCallback('loadAnalysis', loadAnalysis);
             ExternalInterface.addCallback('togglePlayPause', player.togglePlayPause);
-            ExternalInterface.addCallback('resetPlayer', player.resetPlayer);
+            ExternalInterface.addCallback('resetPlayer', player.reset);
 
             // FIXME method name mismatch
             ExternalInterface.addCallback('setRemixString', remix);
@@ -92,7 +92,7 @@ package com.ryanberdeen.remix {
         private function remix(string:String):void {
             try {
                 setRemixString(string);
-                player.preparePlayer(buildSourceList());
+                player.prepare(buildSourceList());
                 player.play();
             }
             catch (e:Error) {
