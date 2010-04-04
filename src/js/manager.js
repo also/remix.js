@@ -105,6 +105,10 @@ var Remix = {
         this._swf.togglePlayPause();
     },
 
+    resetPlayer: function () {
+        this._swf.resetPlayer();
+    },
+
     __setProgress: function (progress, sourceIndex, sourcePosition) {
         this.onPlayerProgress(progress, sourceIndex, sourcePosition);
     },

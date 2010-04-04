@@ -36,7 +36,7 @@ package com.ryanberdeen.remix {
             manager.callJs('setProgress',  position / sourceList.length, source.index, source.position);
         }
 
-        private function resetPlayer():void {
+        public function resetPlayer():void {
             if (remixPlayer != null) {
                 remixPlayer.stop();
 

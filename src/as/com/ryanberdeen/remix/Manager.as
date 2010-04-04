@@ -39,6 +39,7 @@ package com.ryanberdeen.remix {
 
             ExternalInterface.addCallback('loadAnalysis', loadAnalysis);
             ExternalInterface.addCallback('togglePlayPause', player.togglePlayPause);
+            ExternalInterface.addCallback('resetPlayer', player.resetPlayer);
 
             // FIXME method name mismatch
             ExternalInterface.addCallback('setRemixString', remix);
