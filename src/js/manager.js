@@ -169,7 +169,10 @@ var Remix = {
                 Remix.onError('remix must return an array of audio quanta');
                 return;
             }
-            aqs = Remix.processAqs(aqs);
+            if (!aqs.processed) {
+                aqs = Remix.processAqs(aqs);
+            }
+            this.playingAqs = aqs;
             this.mixSpec = [];
             for (var i = 0; i < aqs.length; i++) {
                 var aq = aqs[i];
@@ -184,10 +187,6 @@ var Remix = {
                     spec.push({filters: aq.filters});
                 }
                 this.mixSpec.push(spec);
-            }
-
-            if (this.onRemix) {
-                this.onRemix(aqs);
             }
             this.playingSingleRange = false;
             this.remixString(JSON.stringify(this.mixSpec));
@@ -205,6 +204,7 @@ var Remix = {
             aqs = [aqs];
         }
         var result = [];
+        result.processed = true;
         var offset = 0;
         for (var i = 0; i < aqs.length; i++) {
             var aq = aqs[i];
