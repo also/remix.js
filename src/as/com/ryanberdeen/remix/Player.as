@@ -38,19 +38,18 @@ package com.ryanberdeen.remix {
 
         public function reset():void {
             if (remixPlayer != null) {
-                remixPlayer.stop();
+                if (playing) {
+                    pause();
+                }
 
                 remixPlayer = null;
             }
-            playing = false;
-            positionUpdateTimer.stop();
             setState('empty');
         }
 
         private function soundCompleteHandler(e:Event):void {
-            positionUpdateTimer.stop();
+            pause();
             setState('complete');
-            setState('paused');
         }
 
         public function togglePlayPause():void {
