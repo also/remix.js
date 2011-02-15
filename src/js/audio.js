@@ -3,26 +3,20 @@ function AudioAnalysis(analysis) {
 
     var duration = this.duration;
 
-    if (this.sections) {
-        this.sections = AudioQuantumList.fromSections(this.sections);
-        this.sections.analysis = this;
-    }
-    if (this.bars) {
-        this.bars = AudioQuantumList.fromEvents('bar', this.bars, duration);
-        this.bars.analysis = this;
-    }
-    if (this.beats) {
-        this.beats = AudioQuantumList.fromEvents('beat', this.beats, duration);
-        this.beats.analysis = this;
-    }
-    if (this.tatums) {
-        this.tatums = AudioQuantumList.fromEvents('tatum', this.tatums, duration);
-        this.tatums.analysis = this;
-    }
-    if (this.segments) {
-        this.segments = AudioQuantumList.fromSegments(this.segments);
-        this.segments.analysis = this;
-    }
+    this.sections = AudioQuantumList.fromSections(this.sections);
+    this.sections.analysis = this;
+
+    this.bars = AudioQuantumList.fromEvents('bar', this.bars, duration);
+    this.bars.analysis = this;
+
+    this.beats = AudioQuantumList.fromEvents('beat', this.beats, duration);
+    this.beats.analysis = this;
+
+    this.tatums = AudioQuantumList.fromEvents('tatum', this.tatums, duration);
+    this.tatums.analysis = this;
+
+    this.segments = AudioQuantumList.fromSegments(this.segments);
+    this.segments.analysis = this;
 }
 
 function AudioQuantum() {
