@@ -9,6 +9,13 @@ This library implements a subset of the remix API using JavaScript and Flash. It
  * a set of JavaScript classes to help write scripts that generate remixes using analysis data
  * a Flash player that can play generated remixes in real time
 
+Roadmap
+=======
+
+This project currently relies on version 3 of The Echo Nest API, which is no longer supported. The `nest.js` file implements the track up load methods in JavaScript, but requires bleeding-edge browser features. The Flash API classes need to be updated to support version 4 of the API.
+
+For browsers that support it, remix.js should run entirely in JavaScript. Currently, this is just Chrome Developer Channel. Other browsers will fall back on Flash for certain features. remix.js should make this as transparent as possible.
+
 Running
 =======
 
