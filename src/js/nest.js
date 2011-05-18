@@ -3,12 +3,23 @@
 
 function Nest(api_key) {
     this.api_key = api_key;
+    this.baseUri = 'http://developer.echonest.com/api/v4/';
 }
 
 Nest.prototype = {
     fixupAnalysisUrl: function(url) {
         // undocumented api feature: returns analysis data, works with cors
         return 'http://developer.echonest.com' + url.substr(46);
+    },
+
+    processAnalysisResponse: function (result) {
+        if (result.response.track && result.response.track.status == 'complete') {
+            var url = result.response.track.audio_summary.analysis_url;
+            if (url.indexOf('https://echonest-analysis.s3.amazonaws.com') === 0) {
+                result.response.track.audio_summary.analysis_url = this.fixupAnalysisUrl(url);
+            }
+        }
+        return result;
     },
 
     guessType: function(file) {
@@ -22,12 +33,12 @@ Nest.prototype = {
         form.append('filetype', type);
         form.append('bucket', 'audio_summary');
         var request = new XMLHttpRequest();
-        request.open('POST', 'http://developer.echonest.com/api/v4/track/upload');
-        request.onload = _.bind(function (e) {
+        request.open('POST', this.baseUri + 'track/upload');
+        var that = this;
+        request.onload = function (e) {
             var result = JSON.parse(request.responseText);
-            result.response.track.audio_summary.analysis_url = this.fixupAnalysisUrl(result.response.track.audio_summary.analysis_url);
-            options.onload(result);
-        }, this);
+            options.onload(that.processAnalysisResponse(result));
+        };
         request.onerror = function (e) {
             options.onerror(e);
         }
@@ -41,12 +52,12 @@ Nest.prototype = {
         form.append('url', url);
         form.append('bucket', 'audio_summary');
         var request = new XMLHttpRequest();
-        request.open('POST', 'http://developer.echonest.com/api/v4/track/upload');
-        request.onload = _.bind(function (e) {
+        request.open('POST', this.baseUri + 'track/upload');
+        var that = this;
+        request.onload = function (e) {
             var result = JSON.parse(request.responseText);
-            result.response.track.audio_summary.analysis_url = this.fixupAnalysisUrl(result.response.track.audio_summary.analysis_url);
-            options.onload(result);
-        }, this);
+            options.onload(that.processAnalysisResponse(result));
+        };
         request.onerror = function (e) {
             options.onerror(e);
         }
@@ -57,14 +68,12 @@ Nest.prototype = {
     getTrackProfile: function (md5, options) {
         var request = new XMLHttpRequest();
         // fuck the echo nest api so hard
-        request.open('GET', 'http://developer.echonest.com/api/v4/track/profile?api_key=' + this.api_key + '&format=json&md5=' + md5 + '&bucket=audio_summary&callback=' + new Date().getTime());
-        request.onload = _.bind(function (e) {
+        request.open('GET', this.baseUri + 'track/profile?api_key=' + this.api_key + '&format=json&md5=' + md5 + '&bucket=audio_summary&callback=' + new Date().getTime());
+        var that = this;
+        request.onload = function (e) {
             var result = JSON.parse(request.responseText);
-            if (result.response.track && result.response.track.status == 'complete') {
-                result.response.track.audio_summary.analysis_url = this.fixupAnalysisUrl(result.response.track.audio_summary.analysis_url);
-            }
-            options.onload(result);
-        }, this);
+            options.onload(that.processAnalysisResponse(result));
+        };
         request.onerror = function (e) {
             options.onerror(e);
         }
