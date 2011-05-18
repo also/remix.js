@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<title>remix.js: Load Analysis Example (JavaScript)</title>
+<script src="../../lib/js/remix.js"></script>
+<script src="js-load-analysis.js"></script>
+<style>.response {font-family: monospace; margin: 1em;}</style>
+</head>
+<body>
+<h1>Load Analysis Example (JavaScript)</h1>
+<p><label for="apiKey">API Key:</label> <input type="text" id="apiKey"/></p>
+<p><input type="file" onchange="analyzeFile(this.files[0])"/></p>
+<h2>Upload Response:</h2>
+<div id="upload" class="response"></div>
+
+<h2>Analyis Response:</h2>
+<div id="analysis" class="response"></div>
+</body>
+</html>

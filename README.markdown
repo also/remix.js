@@ -1,5 +1,5 @@
 remix.js
-=======
+========
 
 [The Echo Nest Remix API][echo-nest-remix] for JavaScript.
 
